@@ -5,8 +5,10 @@ from pathlib import Path
 from async_service import Service, TrioManager
 from eth_typing import BlockNumber
 from lahja import EndpointAPI
-from trinity.components.eth2.beacon.base_validator import ETH1_FOLLOW_DISTANCE
 from trinity.components.eth2.eth1_monitor.configs import deposit_contract_json
+
+# FIXME: Read this from validator config
+ETH1_FOLLOW_DISTANCE = 16
 from trinity.components.eth2.eth1_monitor.eth1_data_provider import FakeEth1DataProvider
 from trinity.config import BeaconAppConfig
 from trinity.db.manager import DBClient

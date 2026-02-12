@@ -20,7 +20,7 @@ common: &common
         when: on_fail
     - restore_cache:
         keys:
-          - cache-v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}
+          - cache-v2-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}
     - run:
         name: install libsnappy-dev
         command: sudo apt install -y libsnappy-dev
@@ -38,7 +38,7 @@ common: &common
           - ~/.local
           - ./eggs
           - .pytest_cache/v/eth2/bls/key-cache
-        key: cache-v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}
+        key: cache-v2-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}
 
 eth2_fixtures: &eth2_fixtures
   working_directory: ~/repo
@@ -57,7 +57,7 @@ eth2_fixtures: &eth2_fixtures
         when: on_fail
     - restore_cache:
         keys:
-          - cache-v3-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}-{{ checksum "./.circleci/get_eth2_fixtures.sh" }}
+          - cache-v4-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}-{{ checksum "./.circleci/get_eth2_fixtures.sh" }}
     - run:
         name: install libsnappy-dev
         command: sudo apt install -y libsnappy-dev
@@ -79,93 +79,70 @@ eth2_fixtures: &eth2_fixtures
           - ./eggs
           - .pytest_cache/v/eth2/bls/key-cache
           - ./eth2-fixtures
-        key: cache-v3-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}-{{ checksum "./.circleci/get_eth2_fixtures.sh" }}
+        key: cache-v4-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}-{{ checksum "./.circleci/get_eth2_fixtures.sh" }}
 jobs:
-  py38-lint:
+  py311-lint:
     <<: *common
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.11
         environment:
-          TOXENV: py38-lint
-  py37-lint:
+          TOXENV: py311-lint
+  py310-lint:
     <<: *common
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.10
         environment:
-          TOXENV: py37-lint
-  py38-eth2-core:
-    <<: *common
-    docker:
-      - image: circleci/python:3.8
-        environment:
-          TOXENV: py38-eth2-core
-  py38-eth2-utils:
-    <<: *common
-    docker:
-      - image: circleci/python:3.8
-        environment:
-          TOXENV: py38-eth2-utils
-  py38-eth2-fixtures:
-    <<: *eth2_fixtures
-    docker:
-      - image: circleci/python:3.8
-        environment:
-          TOXENV: py38-eth2-fixtures
-  py38-eth2-integration:
-    <<: *common
-    docker:
-      - image: circleci/python:3.8
-        environment:
-          TOXENV: py38-eth2-integration
-  py38-eth2-trio:
-    <<: *common
-    docker:
-      - image: circleci/python:3.8
-        environment:
-          TOXENV: py38-eth2-trio
-  py38-eth2-components:
-    <<: *common
-    docker:
-      - image: circleci/python:3.8
-        environment:
-          TOXENV: py38-eth2-components
+          TOXENV: py310-lint
 
-  py37-eth2-core:
+  py312-eth2-core:
     <<: *common
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.12
         environment:
-          TOXENV: py37-eth2-core
-  py37-eth2-utils:
+          TOXENV: py312-eth2-core
+  py311-eth2-core:
     <<: *common
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.11
         environment:
-          TOXENV: py37-eth2-utils
-  py37-eth2-fixtures:
+          TOXENV: py311-eth2-core
+  py310-eth2-core:
+    <<: *common
+    docker:
+      - image: cimg/python:3.10
+        environment:
+          TOXENV: py310-eth2-core
+
+  py310-eth2-utils:
+    <<: *common
+    docker:
+      - image: cimg/python:3.10
+        environment:
+          TOXENV: py310-eth2-utils
+  py310-eth2-fixtures:
     <<: *eth2_fixtures
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.10
         environment:
-          TOXENV: py37-eth2-fixtures
-  py37-eth2-integration:
+          TOXENV: py310-eth2-fixtures
+  py310-eth2-integration:
     <<: *common
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.10
         environment:
-          TOXENV: py37-eth2-integration
-  py37-eth2-components:
+          TOXENV: py310-eth2-integration
+  py310-eth2-trio:
     <<: *common
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.10
         environment:
-          TOXENV: py37-eth2-components
-  py37-eth2-trio:
+          TOXENV: py310-eth2-trio
+  py310-eth2-components:
     <<: *common
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.10
         environment:
-          TOXENV: py37-eth2-trio
+          TOXENV: py310-eth2-components
 
   docker-trinity-beacon-image-build-test:
     machine: true
@@ -179,22 +156,17 @@ workflows:
   test:
     jobs:
       # These tests are long, so should be started first to optimize for total suite run time
-      - py38-eth2-core
-      - py37-eth2-core
+      - py312-eth2-core
+      - py311-eth2-core
+      - py310-eth2-core
 
-      - py37-eth2-utils
-      - py37-eth2-fixtures
-      - py37-eth2-integration
-      - py37-eth2-components
-      - py37-eth2-trio
+      - py310-eth2-utils
+      - py310-eth2-fixtures
+      - py310-eth2-integration
+      - py310-eth2-components
+      - py310-eth2-trio
 
-      - py38-eth2-utils
-      - py38-eth2-fixtures
-      - py38-eth2-integration
-      - py38-eth2-components
-      - py38-eth2-trio
-
-      - py38-lint
-      - py37-lint
+      - py311-lint
+      - py310-lint
 
       - docker-trinity-beacon-image-build-test

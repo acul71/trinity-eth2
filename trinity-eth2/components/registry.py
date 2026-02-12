@@ -10,11 +10,6 @@ from trinity.components.eth2.network_generator.component import (
 )
 from trinity.extensibility import BaseComponentAPI
 
-BEACON_NODE_COMPONENTS: Tuple[Type[BaseComponentAPI], ...] = (
-    NetworkGeneratorComponent,
-    DiscV5Component,
-)
-
 
 def discover_components() -> Tuple[Type[BaseComponentAPI], ...]:
     # Components need to define entrypoints at 'trinity-eth2.components' to automatically get loaded
@@ -30,10 +25,6 @@ def get_all_components(
     *extra_components: Type[BaseComponentAPI],
 ) -> Tuple[Type[BaseComponentAPI], ...]:
     return extra_components + discover_components()
-
-
-def get_components_for_beacon_client() -> Tuple[Type[BaseComponentAPI], ...]:
-    return BEACON_NODE_COMPONENTS
 
 
 def get_components_for_trio_beacon_client() -> Tuple[Type[BaseComponentAPI], ...]:

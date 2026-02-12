@@ -1,13 +1,12 @@
 from enum import Enum, unique
 from typing import AsyncIterable, Callable
 
-from libp2p.host.host_interface import IHost
+from libp2p.abc import IHost, ISubscriptionAPI
 from libp2p.peer.id import ID
 from libp2p.pubsub.gossipsub import GossipSub
 from libp2p.pubsub.gossipsub import PROTOCOL_ID as GOSSIPSUB_PROTOCOL_ID
 from libp2p.pubsub.pb.rpc_pb2 import Message as GossipMessage
 from libp2p.pubsub.pubsub import Pubsub, get_content_addressed_msg_id
-from libp2p.pubsub.subscription import ISubscriptionAPI
 import snappy
 import ssz
 

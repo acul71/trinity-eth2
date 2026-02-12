@@ -3,17 +3,20 @@ from typing import AsyncIterable, Callable, Sequence, Set
 
 import libp2p.crypto.ed25519 as ed25519
 from libp2p.crypto.keys import KeyPair
+from libp2p.custom_types import TProtocol
 from libp2p.host.basic_host import BasicHost
 from libp2p.network.swarm import Swarm
 from libp2p.peer.id import ID as PeerID
 from libp2p.peer.peerinfo import PeerInfo
 from libp2p.peer.peerstore import PeerStore
-import libp2p.security.secio.transport as secio
 import libp2p.security.noise.transport as noise
+import libp2p.security.secio.transport as secio
+from libp2p.security.tls.transport import TLSTransport
+from libp2p.security.tls.transport import PROTOCOL_ID as TLS_PROTOCOL_ID
 from libp2p.stream_muxer.mplex.mplex import MPLEX_PROTOCOL_ID, Mplex
+from libp2p.stream_muxer.yamux.yamux import PROTOCOL_ID as YAMUX_PROTOCOL_ID, Yamux
 from libp2p.transport.tcp.tcp import TCP
 from libp2p.transport.upgrader import TransportUpgrader
-from libp2p.typing import TProtocol
 from multiaddr import Multiaddr
 
 from eth2.beacon.types.blocks import SignedBeaconBlock
@@ -56,15 +59,19 @@ class Host(BasicHost):
         peer_store = PeerStore()
         peer_store.add_key_pair(peer_id, key_pair)
 
-        muxer_transports_by_protocol = {MPLEX_PROTOCOL_ID: Mplex}
+        # Yamux is the preferred muxer for interop with Go/Rust libp2p;
+        # Mplex is kept as a fallback.
+        muxer_transports_by_protocol = {
+            YAMUX_PROTOCOL_ID: Yamux,
+            MPLEX_PROTOCOL_ID: Mplex,
+        }
         noise_key = ed25519.create_new_key_pair()
         security_transports_by_protocol = {
-            TProtocol(secio.ID): secio.Transport(
-                key_pair
-            ),
+            TProtocol(TLS_PROTOCOL_ID): TLSTransport(key_pair),
             TProtocol(noise.PROTOCOL_ID): noise.Transport(
                 key_pair, noise_key.private_key
-            )
+            ),
+            TProtocol(secio.ID): secio.Transport(key_pair),
         }
         upgrader = TransportUpgrader(
             security_transports_by_protocol, muxer_transports_by_protocol

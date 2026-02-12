@@ -3,7 +3,7 @@ import logging
 import time
 from typing import Any, Collection, Iterable, Optional, Set, Tuple
 
-from async_service import background_trio_service
+from libp2p.tools.async_service import background_trio_service
 from eth.db.backends.level import LevelDB
 from eth.exceptions import BlockNotFound
 from eth_keys.datatypes import PrivateKey

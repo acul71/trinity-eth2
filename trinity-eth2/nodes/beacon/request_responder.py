@@ -16,7 +16,7 @@ from typing import (
 
 from eth_utils import ValidationError
 from libp2p.network.stream.exceptions import StreamEOF
-from libp2p.network.stream.net_stream_interface import INetStream
+from libp2p.abc import INetStream
 from libp2p.peer.id import ID as PeerID
 from libp2p.utils import decode_uvarint_from_stream, encode_uvarint
 from snappy import StreamCompressor, StreamDecompressor

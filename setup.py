@@ -6,46 +6,38 @@ TRINITY_DEP = "57bee06c9ad350ddfba1ae4b2081025aa454880d"
 
 deps = {
     "trinity-eth2": [
-        f"trinity @ git+https://github.com/ethereum/trinity.git@{TRINITY_DEP}"
+        f"trinity @ git+https://github.com/ethereum/trinity.git@{TRINITY_DEP}",
+        "libp2p>=0.5.0",
     ],
     "test": [
         "async-timeout>=3.0.1,<4",
         "hypothesis>=4.45.1,<5",
         "pexpect>=4.6, <5",
         "factory-boy==2.12.0",
-        "pytest>=5.3.0,<5.4",
-        "pytest-cov>=2.8.1,<2.9",
-        "pytest-mock>=1.12.1,<1.13",
-        "pytest-randomly>=3.1.0,<3.2",
-        "pytest-timeout>=1.4.2,<2",
+        "pytest>=7.0.0",
+        "pytest-cov>=4.0.0",
+        "pytest-mock>=3.10.0",
+        "pytest-randomly>=3.12.0",
+        "pytest-timeout>=2.1.0",
         "pytest-watch>=4.2.0,<4.3",
-        # xdist pinned at <1.29 due to: https://github.com/pytest-dev/pytest-xdist/issues/472
-        "pytest-xdist>=1.29.0,<1.30",
+        "pytest-xdist>=3.0.0",
         # only for eth2
         "ruamel.yaml==0.16.10",
         "eth-tester==0.4.0b2",
     ],
-    # We have to keep some separation between trio and asyncio based tests
-    # because `pytest-asyncio` is greedy and tries to run all asyncio fixtures.
-    # See: https://github.com/ethereum/trinity/pull/790
-    # NOTE: In order to properly run any asyncio tests you need to manually install the
-    # test-asyncio deps, otherwise pytest will run them but never await for them to finish and
-    # you'll get warnings saying that a coroutine was never awaited.
-    "test-asyncio": ["pytest-asyncio>=0.10.0,<0.11", "pytest-aiohttp>=0.3.0,<0.4"],
-    "test-trio": ["pytest-trio>=0.5.2,<0.6"],
+    "test-trio": ["pytest-trio>=0.7.0"],
     "lint": [
-        "flake8==3.7.9",
-        "flake8-bugbear==19.8.0",
-        "mypy==0.782",
-        "sqlalchemy-stubs==0.3",
-        "black==19.3b0",
-        "isort==4.3.21",
+        "flake8>=6.0.0",
+        "flake8-bugbear>=23.0.0",
+        "mypy>=1.0.0",
+        "black>=23.0.0",
+        "isort>=5.12.0",
     ],
     "dev": [
         "bumpversion>=0.5.3,<1",
         "wheel",
         "setuptools>=36.2.0",
-        "tox==2.7.0",
+        "tox>=4.0.0",
         "twine",
     ],
     "eth2": [
@@ -86,7 +78,7 @@ setup(
     url="https://github.com/ethereum/trinity",
     include_package_data=True,
     py_modules=["trinity-eth2", "eth2"],
-    python_requires=">=3.7,<4",
+    python_requires=">=3.10,<4",
     install_requires=install_requires,
     extras_require=deps,
     license="MIT",
@@ -98,8 +90,9 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     # trinity
     entry_points={

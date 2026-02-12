@@ -60,7 +60,11 @@ prof/**
 *.swp
 docs/evm.*rst
 venv*
+.venv/
 .eggs/
+
+# downloads
+downloads/
 
 # vscode
 .vscode/**
